@@ -5,27 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Basic Calculator</title>
+  <script src='index.js' defer></script>
 </head>
 <body>
   <div id='calculator'>
-
-    <div id='response-pane'>
-    </div>
-
+    
     <div id='modifier-buttons'>
       <button class='modifiers unsupported'>AC</button>
       <button class='modifiers unsupported'>&plusmn;</button>
       <button class='modifiers unsupported'>%</button>
     </div>
-
+    
     <div id='operation-buttons'>
-      <button class='operations'>&divide;</button>
-      <button class='operations'>&times;</button>
-      <button class='operations'>-</button>
-      <button class='operations'>+</button>
-      <button class='operations'>=</button>
+      <button class='operations' value='division'>&divide;</button>
+      <button class='operations' value='multiplication'>&times;</button>
+      <button class='operations' value='subtraction'>-</button>
+      <button class='operations' value='addition'>+</button>
+      <button class='operations' value='answer'>=</button>
     </div>
-
+    
     <div id='digit-buttons'>
       <button class='digits'>0</button>
       <button class='digits'>1</button>
@@ -39,7 +37,10 @@
       <button class='digits'>9</button>
       <button class='digits'>.</button>
     </div>
-
+    
+        <div id='response-pane'>
+        </div>
+    
   </div>
 </body>
 </html>
