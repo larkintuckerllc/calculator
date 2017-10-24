@@ -26,20 +26,24 @@ let addDigitsListener = () => {
   } // end for
 }
 
+let containsMultiplication = elem => elem === '×' || elem === '÷';
+
+let containsAddition = elem => elem === '+' || elem === '-';
+
 let addOperationsListener = () => { // consider removing = button from this and giving it its own listener
   let operationButtons = document.getElementsByClassName('operations');
   let responsePane = document.getElementById('response-pane');
   for (let elem of operationButtons) {
     elem.addEventListener('click', (e) => {
-      debugger;
-      tape.push(responsePane.innerText);
+      tape.push(Number(responsePane.innerText));
       responsePane.dataset.processed = true;
-      // let elemName = e.currentTarget.name;
-      // let elemValue = e.currentTarget.value;
+
       let elemText = e.currentTarget.innerText;
       tape.push(elemText);
-
-      if (multiplicationCounter === 1) {
+      let multiplicationCounter = tape.filter((operator) => operator === '×' || operator === '÷').length;
+      let additionCounter = tape.filter((operator) => operator === "+" || operator === '-').length;
+      
+      if (multiplicationCounter === 2) {
         if (elemText === "×" || elemText === '÷') {
           let numbersToEvaluate = tape.splice(-4, 3);
           let x = numbersToEvaluate[0];
@@ -47,21 +51,15 @@ let addOperationsListener = () => { // consider removing = button from this and 
           let operator = numbersToEvaluate[1];
           let product = math[operator](x, y);
           tape.splice(-1, 0, product);
+        } else if (elemText === '+' || elemText === '-') {
+          // TODO
         }
       }
-
-      if (elemText === "×" || elemText === '÷') {
-        multiplicationCounter = multiplicationCounter * -1 + 1;
-      } else if (elemText === '+' || elemText === '-') {
-        additionCounter = additionCounter * -1 + 1;
-      }
-
+      responsePane.innerText = tape[tape.length - 2] || responsePane.innerText;
     })
   } // end for
 }
 
 let tape = []
-let multiplicationCounter = 0;
-let additionCounter = 0;
 
 document.addEventListener('DOMContentLoaded', addEventsToButtons());
