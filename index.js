@@ -11,13 +11,15 @@ let disableButtons = () => {
   }
 }
 
+let errors = ['Error', 'Undefined'];
+
 let validateNumber = (number) => {
   if (number.toPrecision().length > 10) {
     disableButtons();
-    return 'Error';
+    return errors[0];
   } else if (number === Infinity) {
     disableButtons();
-    return 'Undefined';
+    return errors[1];
   }
   return number;
 }
@@ -47,7 +49,11 @@ let evaluateNumbers = () => {
   let y = numbersToEvaluate[2];
   let operator = numbersToEvaluate[1];
   let answer = math[operator](x, y);
-  tape.splice(-1, 0, answer);
+  if (errors.includes(answer)) {
+    tape = [answer];
+  } else {
+    tape.splice(-1, 0, answer);
+  }
 }
 
 let addDigitsListener = () => {
@@ -71,6 +77,7 @@ let addOperationsListener = () => {
   let operators = ['+', '-', '×', '÷', '='];
   let addition = ['+', '-'];
   let multiplication = ['×', '÷'];
+  let reversedTape = [];
   let responsePane = document.getElementById('response-pane');
   for (let elem of operationButtons) {
     elem.addEventListener('click', (e) => {
@@ -112,8 +119,14 @@ let addOperationsListener = () => {
         }
         tape.pop();
       }
-      // TODO make this more resilient. I'm not happy with it. It assumes too much about the contents of `tape`
-      responsePane.innerText = tape[tape.length - 2] || tape[tape.length - 1] || responsePane.innerText;
+
+      if (errors.includes(tape[0])) {
+        responsePane.innerText = tape[0];
+      } else {
+        reversedTape = tape.slice();
+        reversedTape.reverse();
+        responsePane.innerText = reversedTape.find( elem => typeof elem === 'number') || responsePane.innerText;
+      }
     })
   }
 }
