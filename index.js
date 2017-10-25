@@ -3,12 +3,27 @@ let addEventsToButtons = () => {
   addOperationsListener();
 }
 
+let disableButtons = () => {
+  let buttons = document.getElementsByTagName('button');
+  for (let button of buttons) {
+    button.disabled = true;
+  }
+}
+
 let math = {
   '+': (x, y) => x + y,
   '-': (x, y) => x - y,
-  '÷': (x, y) => x / y,
+  '÷': (x, y) => {
+    if (y === 0) {
+      disableButtons();
+      return 'Error: can\'t divide by zero in this universe. To continue, reload the page.';
+    }
+    return x / y;
+  },
   '×': (x, y) => x * y,
 }
+
+// use numObj.toPrecision().length to determine if number is > 10 digits and return 'overflow' if it is.
 
 let addDigitsListener = () => {
   let digitButtons = document.getElementsByClassName('digits');
