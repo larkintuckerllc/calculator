@@ -66,7 +66,7 @@ let addDigitsListener = () => {
   } // end for
 }
 
-let addOperationsListener = () => { // consider removing = button from this and giving it its own listener
+let addOperationsListener = () => {
   let operationButtons = document.getElementsByClassName('operations');
   let operators = ['+', '-', '×', '÷', '='];
   let addition = ['+', '-'];
@@ -89,14 +89,14 @@ let addOperationsListener = () => { // consider removing = button from this and 
       // scenario: [N, m, N, a]
       // scenario: [N, a, N, a]
       if (tape.length === 4) {
-        if (multiplication.includes(firstOperator) || addition.includes(secondOperator) || secondOperator === '=') {
+        if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
           evaluateNumbers();
         }
       }
       if (tape.length === 6) {
         // scenario: [N, a, N, m, N, m]
         let thirdOperator = tape[5];
-        if (multiplication.includes(thirdOperator) || thirdOperator === '=') { // TODO if thirdOperator === '=' it doesn't work correctly. fix it.
+        if (multiplication.includes(thirdOperator)) {
           evaluateNumbers();
         }
         // scenario: [N, a, N, m, N, a]
@@ -106,14 +106,16 @@ let addOperationsListener = () => { // consider removing = button from this and 
         }
       }
 
-      // TODO make this more resilient. I'm not happy with it. It assumes too much about the contents of `tape`
-      responsePane.innerText = tape[tape.length - 2] || responsePane.innerText;
-
       if (tape[tape.length - 1] === '=') {
+        while (tape.length > 2) {
+          evaluateNumbers();
+        }
         tape.pop();
       }
+      // TODO make this more resilient. I'm not happy with it. It assumes too much about the contents of `tape`
+      responsePane.innerText = tape[tape.length - 2] || tape[tape.length - 1] || responsePane.innerText;
     })
-  } // end for
+  }
 }
 
 let tape = []
