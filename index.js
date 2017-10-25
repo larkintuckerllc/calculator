@@ -63,18 +63,28 @@ let containsAddition = elem => elem === '+' || elem === '-';
 
 let addOperationsListener = () => { // consider removing = button from this and giving it its own listener
   let operationButtons = document.getElementsByClassName('operations');
+  let operators = [];
   let responsePane = document.getElementById('response-pane');
   for (let elem of operationButtons) {
+    operators.push(elem.innerText);
     elem.addEventListener('click', (e) => {
-      tape.push(Number(responsePane.innerText));
+      debugger;
+      // TODO move validations here before responsePane.innerText even gets added to tape. Should be more performant.
+      if (responsePane.dataset.processed !== 'true') {
+        tape.push(Number(responsePane.innerText));
+      }
+      if (operators.includes(tape[tape.length - 1])) {
+        tape.pop();
+      }
       responsePane.dataset.processed = true;
 
       let elemText = e.currentTarget.innerText;
       tape.push(elemText);
       let multiplicationCounter = tape.filter((operator) => operator === '×' || operator === '÷').length;
       let additionCounter = tape.filter((operator) => operator === "+" || operator === '-').length;
+      // TODO reduce if statements by using tape.slice().includes();
       // scenario: [N, m, N, m]
-      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '×' || tape[3] === '÷')) {
+      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '×' || tape[3] === '÷' || tape[3] === '=')) {
         let numbersToEvaluate = tape.splice(-4, 3);
         let x = numbersToEvaluate[0];
         let y = numbersToEvaluate[2];
@@ -83,7 +93,7 @@ let addOperationsListener = () => { // consider removing = button from this and 
         tape.splice(-1, 0, product);
       }
       // scenario: [N, m, N, a]
-      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '+' || tape[3] === '-')) {
+      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '+' || tape[3] === '-' || tape[3] === '=')) {
         let numbersToEvaluate = tape.splice(-4, 3);
         let x = numbersToEvaluate[0];
         let y = numbersToEvaluate[2];
@@ -92,7 +102,7 @@ let addOperationsListener = () => { // consider removing = button from this and 
         tape.splice(-1, 0, product);
       }
       // scenario: [N, a, N, m, N, m]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '×' || tape[5] === '÷')) {
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '×' || tape[5] === '÷' || tape[5] === '=')) {
         let numbersToEvaluate = tape.splice(-4, 3);
         let x = numbersToEvaluate[0];
         let y = numbersToEvaluate[2];
@@ -101,7 +111,7 @@ let addOperationsListener = () => { // consider removing = button from this and 
         tape.splice(-1, 0, product);
       }
       // scenario: [N, a, N, m, N, a]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '+' || tape[5] === '-')) {
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '+' || tape[5] === '-' || tape[5] === '=')) {
         let numbersToEvaluate = tape.splice(-4, 3);
         let x = numbersToEvaluate[0];
         let y = numbersToEvaluate[2];
@@ -115,7 +125,7 @@ let addOperationsListener = () => { // consider removing = button from this and 
       }
 
       // scenario: [N, a, N, a]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '+' || tape[3] === '-')) {
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '+' || tape[3] === '-' || tape[3] === '=')) {
         let numbersToEvaluate = tape.splice(-4, 3);
         let x = numbersToEvaluate[0];
         let y = numbersToEvaluate[2];
@@ -124,7 +134,12 @@ let addOperationsListener = () => { // consider removing = button from this and 
         tape.splice(-1, 0, sum);
       }
 
+      // TODO make this more resilient. I'm not happy with it. It assumes too much about the contents of `tape`
       responsePane.innerText = tape[tape.length - 2] || responsePane.innerText;
+
+      if (tape[tape.length - 1] === '=') {
+        tape.pop();
+      }
     })
   } // end for
 }
