@@ -3,6 +3,7 @@ let addEventsToButtons = () => {
   addOperationsListener();
 }
 
+// TODO make AC functional, don't disable AC here, instruct user to press AC in validateNumber()
 let disableButtons = () => {
   let buttons = document.getElementsByTagName('button');
   for (let button of buttons) {
@@ -10,17 +11,34 @@ let disableButtons = () => {
   }
 }
 
+let validateNumber = (number) => {
+  if (number.toPrecision().length > 10) {
+    disableButtons();
+    return 'Overflow';
+  } else if (number === Infinity) {
+    disableButtons();
+    return 'Error: can\'t divide by zero in this universe. To continue, reload the page.';
+  }
+  return number;
+}
+
 let math = {
-  '+': (x, y) => x + y,
-  '-': (x, y) => x - y,
-  '÷': (x, y) => {
-    if (y === 0) {
-      disableButtons();
-      return 'Error: can\'t divide by zero in this universe. To continue, reload the page.';
-    }
-    return x / y;
+  '+': (x, y) => {
+    let sum = x + y;
+    return validateNumber(sum);
   },
-  '×': (x, y) => x * y,
+  '-': (x, y) => {
+    let sum = x - y
+    return validateNumber(sum);
+  },
+  '÷': (x, y) => {
+    let product = x / y;
+    return validateNumber(product);
+  },
+  '×': (x, y) => {
+    let product = x * y;
+    return validateNumber(product);
+  },
 }
 
 // use numObj.toPrecision().length to determine if number is > 10 digits and return 'overflow' if it is.
