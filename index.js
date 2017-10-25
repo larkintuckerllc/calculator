@@ -4,10 +4,10 @@ let addEventsToButtons = () => {
 }
 
 let math = {
-  '+': (x, y) => { return x + y },
-  '-': (x, y) => { return x - y },
-  '÷': (x, y) => { return x / y },
-  '×': (x, y) => { return x * y },
+  '+': (x, y) => x + y,
+  '-': (x, y) => x - y,
+  '÷': (x, y) => x / y,
+  '×': (x, y) => x * y,
 }
 
 let addDigitsListener = () => {
@@ -84,6 +84,14 @@ let addOperationsListener = () => { // consider removing = button from this and 
       }
 
       // scenario: [N, a, N, a]
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '+' || tape[3] === '-')) {
+        let numbersToEvaluate = tape.splice(-4, 3);
+        let x = numbersToEvaluate[0];
+        let y = numbersToEvaluate[2];
+        let operator = numbersToEvaluate[1];
+        let sum = math[operator](x, y);
+        tape.splice(-1, 0, sum);
+      }
 
       responsePane.innerText = tape[tape.length - 2] || responsePane.innerText;
     })
