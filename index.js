@@ -41,6 +41,15 @@ let math = {
   },
 }
 
+let evaluateNumbers = () => {
+  let numbersToEvaluate = tape.splice(-4, 3);
+  let x = numbersToEvaluate[0];
+  let y = numbersToEvaluate[2];
+  let operator = numbersToEvaluate[1];
+  let answer = math[operator](x, y);
+  tape.splice(-1, 0, answer);
+}
+
 let addDigitsListener = () => {
   let digitButtons = document.getElementsByClassName('digits');
   let responsePane = document.getElementById('response-pane');
@@ -57,19 +66,14 @@ let addDigitsListener = () => {
   } // end for
 }
 
-let containsMultiplication = elem => elem === '×' || elem === '÷';
-
-let containsAddition = elem => elem === '+' || elem === '-';
-
 let addOperationsListener = () => { // consider removing = button from this and giving it its own listener
   let operationButtons = document.getElementsByClassName('operations');
-  let operators = [];
+  let operators = ['+', '-', '×', '÷', '='];
+  let addition = ['+', '-'];
+  let multiplication = ['×', '÷'];
   let responsePane = document.getElementById('response-pane');
   for (let elem of operationButtons) {
-    operators.push(elem.innerText);
     elem.addEventListener('click', (e) => {
-      debugger;
-      // TODO move validations here before responsePane.innerText even gets added to tape. Should be more performant.
       if (responsePane.dataset.processed !== 'true') {
         tape.push(Number(responsePane.innerText));
       }
@@ -77,61 +81,29 @@ let addOperationsListener = () => { // consider removing = button from this and 
         tape.pop();
       }
       responsePane.dataset.processed = true;
+      tape.push(e.currentTarget.innerText);
 
-      let elemText = e.currentTarget.innerText;
-      tape.push(elemText);
-      let multiplicationCounter = tape.filter((operator) => operator === '×' || operator === '÷').length;
-      let additionCounter = tape.filter((operator) => operator === "+" || operator === '-').length;
-      // TODO reduce if statements by using tape.slice().includes();
+      let firstOperator = tape[1];
+      let secondOperator = tape[3];
       // scenario: [N, m, N, m]
-      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '×' || tape[3] === '÷' || tape[3] === '=')) {
-        let numbersToEvaluate = tape.splice(-4, 3);
-        let x = numbersToEvaluate[0];
-        let y = numbersToEvaluate[2];
-        let operator = numbersToEvaluate[1];
-        let product = math[operator](x, y);
-        tape.splice(-1, 0, product);
-      }
       // scenario: [N, m, N, a]
-      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '+' || tape[3] === '-' || tape[3] === '=')) {
-        let numbersToEvaluate = tape.splice(-4, 3);
-        let x = numbersToEvaluate[0];
-        let y = numbersToEvaluate[2];
-        let operator = numbersToEvaluate[1];
-        let product = math[operator](x, y);
-        tape.splice(-1, 0, product);
-      }
-      // scenario: [N, a, N, m, N, m]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '×' || tape[5] === '÷' || tape[5] === '=')) {
-        let numbersToEvaluate = tape.splice(-4, 3);
-        let x = numbersToEvaluate[0];
-        let y = numbersToEvaluate[2];
-        let operator = numbersToEvaluate[1];
-        let product = math[operator](x, y);
-        tape.splice(-1, 0, product);
-      }
-      // scenario: [N, a, N, m, N, a]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '+' || tape[5] === '-' || tape[5] === '=')) {
-        let numbersToEvaluate = tape.splice(-4, 3);
-        let x = numbersToEvaluate[0];
-        let y = numbersToEvaluate[2];
-        let operator = numbersToEvaluate[1];
-        let product = math[operator](x, y);
-        numbersToEvaluate = tape.splice(0, 2);
-        x = numbersToEvaluate[0];
-        operator = numbersToEvaluate[1];
-        let sum = math[operator](x, product);
-        tape.splice(-1, 0, sum);
-      }
-
       // scenario: [N, a, N, a]
-      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '+' || tape[3] === '-' || tape[3] === '=')) {
-        let numbersToEvaluate = tape.splice(-4, 3);
-        let x = numbersToEvaluate[0];
-        let y = numbersToEvaluate[2];
-        let operator = numbersToEvaluate[1];
-        let sum = math[operator](x, y);
-        tape.splice(-1, 0, sum);
+      if (tape.length === 4) {
+        if (multiplication.includes(firstOperator) || addition.includes(secondOperator) || secondOperator === '=') {
+          evaluateNumbers();
+        }
+      }
+      if (tape.length === 6) {
+        // scenario: [N, a, N, m, N, m]
+        let thirdOperator = tape[5];
+        if (multiplication.includes(thirdOperator) || thirdOperator === '=') { // TODO if thirdOperator === '=' it doesn't work correctly. fix it.
+          evaluateNumbers();
+        }
+        // scenario: [N, a, N, m, N, a]
+        if (addition.includes(thirdOperator)) {
+          evaluateNumbers();
+          evaluateNumbers();
+        }
       }
 
       // TODO make this more resilient. I'm not happy with it. It assumes too much about the contents of `tape`
