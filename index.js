@@ -14,10 +14,10 @@ let disableButtons = () => {
 let validateNumber = (number) => {
   if (number.toPrecision().length > 10) {
     disableButtons();
-    return 'Overflow';
+    return 'Error';
   } else if (number === Infinity) {
     disableButtons();
-    return 'Error: can\'t divide by zero in this universe. To continue, reload the page.';
+    return 'Undefined';
   }
   return number;
 }
@@ -40,8 +40,6 @@ let math = {
     return validateNumber(product);
   },
 }
-
-// use numObj.toPrecision().length to determine if number is > 10 digits and return 'overflow' if it is.
 
 let addDigitsListener = () => {
   let digitButtons = document.getElementsByClassName('digits');
