@@ -42,19 +42,49 @@ let addOperationsListener = () => { // consider removing = button from this and 
       tape.push(elemText);
       let multiplicationCounter = tape.filter((operator) => operator === '×' || operator === '÷').length;
       let additionCounter = tape.filter((operator) => operator === "+" || operator === '-').length;
-      
-      if (multiplicationCounter === 2) {
-        if (elemText === "×" || elemText === '÷') {
-          let numbersToEvaluate = tape.splice(-4, 3);
-          let x = numbersToEvaluate[0];
-          let y = numbersToEvaluate[2];
-          let operator = numbersToEvaluate[1];
-          let product = math[operator](x, y);
-          tape.splice(-1, 0, product);
-        } else if (elemText === '+' || elemText === '-') {
-          // TODO
-        }
+      // scenario: [N, m, N, m]
+      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '×' || tape[3] === '÷')) {
+        let numbersToEvaluate = tape.splice(-4, 3);
+        let x = numbersToEvaluate[0];
+        let y = numbersToEvaluate[2];
+        let operator = numbersToEvaluate[1];
+        let product = math[operator](x, y);
+        tape.splice(-1, 0, product);
       }
+      // scenario: [N, m, N, a]
+      if ((tape[1] === '×' || tape[1] === '÷') && (tape[3] === '+' || tape[3] === '-')) {
+        let numbersToEvaluate = tape.splice(-4, 3);
+        let x = numbersToEvaluate[0];
+        let y = numbersToEvaluate[2];
+        let operator = numbersToEvaluate[1];
+        let product = math[operator](x, y);
+        tape.splice(-1, 0, product);
+      }
+      // scenario: [N, a, N, m, N, m]
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '×' || tape[5] === '÷')) {
+        let numbersToEvaluate = tape.splice(-4, 3);
+        let x = numbersToEvaluate[0];
+        let y = numbersToEvaluate[2];
+        let operator = numbersToEvaluate[1];
+        let product = math[operator](x, y);
+        tape.splice(-1, 0, product);
+      }
+      // scenario: [N, a, N, m, N, a]
+      if ((tape[1] === '+' || tape[1] === '-') && (tape[3] === '×' || tape[3] === '÷') && (tape[5] === '+' || tape[5] === '-')) {
+        let numbersToEvaluate = tape.splice(-4, 3);
+        let x = numbersToEvaluate[0];
+        let y = numbersToEvaluate[2];
+        let operator = numbersToEvaluate[1];
+        let product = math[operator](x, y);
+        numbersToEvaluate = tape.splice(0, 2);
+        x = numbersToEvaluate[0];
+        operator = numbersToEvaluate[1];
+        let sum = math[operator](x, product);
+        tape.splice(-1, 0, sum);
+      }
+
+      // scenario: [N, a, N, a]
+
       responsePane.innerText = tape[tape.length - 2] || responsePane.innerText;
     })
   } // end for
