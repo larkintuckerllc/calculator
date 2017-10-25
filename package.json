@@ -1,0 +1,28 @@
+{
+  "name": "calculator",
+  "version": "1.0.0",
+  "description": "iOS-like calculator using vanilla JS, HTML5, and CSS3",
+  "main": "index.js",
+  "dependencies": {
+    "eslint-config-airbnb": "^16.1.0"
+  },
+  "devDependencies": {
+    "wdio-jasmine-framework": "^0.3.2",
+    "wdio-selenium-standalone-service": "0.0.9",
+    "webdriverio": "^4.8.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/wdio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonMFry/calculator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JasonMFry/calculator/issues"
+  },
+  "homepage": "https://github.com/JasonMFry/calculator#readme"
+}
