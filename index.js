@@ -69,11 +69,7 @@ const evaluateNumbers = () => {
   const y = numbersToEvaluate[2];
   const operator = numbersToEvaluate[1];
   const answer = math[operator](x, y);
-  if (errors.includes(answer)) {
-    tape = [answer];
-  } else {
-    tape.splice(-1, 0, answer);
-  }
+  tape.splice(-1, 0, answer);
 };
 
 const addDigitsListener = () => {
