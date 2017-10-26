@@ -1,19 +1,16 @@
-let addEventsToButtons = () => {
-  addDigitsListener();
-  addOperationsListener();
-}
+let tape = [];
 
 // TODO make AC functional, don't disable AC here, instruct user to press AC in validateNumber()
-let disableButtons = () => {
-  let buttons = document.getElementsByTagName('button');
-  for (let button of buttons) {
+const disableButtons = () => {
+  const buttons = document.getElementsByTagName('button');
+  for (const button of buttons) {
     button.disabled = true;
   }
-}
+};
 
-let errors = ['Error', 'Undefined'];
+const errors = ['Error', 'Undefined'];
 
-let validateNumber = (number) => {
+const validateNumber = (number) => {
   if (number.toPrecision().length > 10) {
     disableButtons();
     return errors[0];
@@ -22,46 +19,46 @@ let validateNumber = (number) => {
     return errors[1];
   }
   return number;
-}
+};
 
-let math = {
+const math = {
   '+': (x, y) => {
-    let sum = x + y;
+    const sum = x + y;
     return validateNumber(sum);
   },
   '-': (x, y) => {
-    let sum = x - y
+    const sum = x - y;
     return validateNumber(sum);
   },
   '÷': (x, y) => {
-    let product = x / y;
+    const product = x / y;
     return validateNumber(product);
   },
   '×': (x, y) => {
-    let product = x * y;
+    const product = x * y;
     return validateNumber(product);
   },
-}
+};
 
-let evaluateNumbers = () => {
-  let numbersToEvaluate = tape.splice(-4, 3);
-  let x = numbersToEvaluate[0];
-  let y = numbersToEvaluate[2];
-  let operator = numbersToEvaluate[1];
-  let answer = math[operator](x, y);
+const evaluateNumbers = () => {
+  const numbersToEvaluate = tape.splice(-4, 3);
+  const x = numbersToEvaluate[0];
+  const y = numbersToEvaluate[2];
+  const operator = numbersToEvaluate[1];
+  const answer = math[operator](x, y);
   if (errors.includes(answer)) {
     tape = [answer];
   } else {
     tape.splice(-1, 0, answer);
   }
-}
+};
 
-let addDigitsListener = () => {
-  let digitButtons = document.getElementsByClassName('digits');
-  let responsePane = document.getElementById('response-pane');
-  for (let elem of digitButtons) {
+const addDigitsListener = () => {
+  const digitButtons = document.getElementsByClassName('digits');
+  const responsePane = document.getElementById('response-pane');
+  for (const elem of digitButtons) {
     elem.addEventListener('click', (e) => {
-      let elemText = e.currentTarget.innerText;
+      const elemText = e.currentTarget.innerText;
       if (responsePane.dataset.processed === 'false') {
         responsePane.innerText += elemText;
       } else {
@@ -70,28 +67,42 @@ let addDigitsListener = () => {
       responsePane.dataset.processed = false;
     });
   } // end for
-}
+};
 
-let addOperationsListener = () => {
-  let operationButtons = document.getElementsByClassName('operations');
-  let operators = ['+', '-', '×', '÷', '='];
-  let addition = ['+', '-'];
-  let multiplication = ['×', '÷'];
+const validateInput = (responsePane, operators) => {
+  if (responsePane.dataset.processed !== 'true') {
+    tape.push(Number(responsePane.innerText));
+  }
+  if (operators.includes(tape[tape.length - 1])) {
+    tape.pop();
+  }
+};
+
+const validateOutput = (responsePane, reversedTape) => {
+  if (errors.includes(tape[0])) {
+    responsePane.innerText = tape[0];
+  } else {
+    reversedTape = tape.slice();
+    reversedTape.reverse();
+    responsePane.innerText = reversedTape.find(element => typeof element === 'number') || responsePane.innerText;
+  }
+};
+
+const addOperationsListener = () => {
+  const responsePane = document.getElementById('response-pane');
+  const operators = ['+', '-', '×', '÷', '='];
+  const operationButtons = document.getElementsByClassName('operations');
+  const addition = ['+', '-'];
+  const multiplication = ['×', '÷'];
   let reversedTape = [];
-  let responsePane = document.getElementById('response-pane');
-  for (let elem of operationButtons) {
+  for (const elem of operationButtons) {
     elem.addEventListener('click', (e) => {
-      if (responsePane.dataset.processed !== 'true') {
-        tape.push(Number(responsePane.innerText));
-      }
-      if (operators.includes(tape[tape.length - 1])) {
-        tape.pop();
-      }
+      validateInput(responsePane, operators);
       responsePane.dataset.processed = true;
       tape.push(e.currentTarget.innerText);
 
-      let firstOperator = tape[1];
-      let secondOperator = tape[3];
+      const firstOperator = tape[1];
+      const secondOperator = tape[3];
       // scenario: [N, m, N, m]
       // scenario: [N, m, N, a]
       // scenario: [N, a, N, a]
@@ -102,7 +113,7 @@ let addOperationsListener = () => {
       }
       if (tape.length === 6) {
         // scenario: [N, a, N, m, N, m]
-        let thirdOperator = tape[5];
+        const thirdOperator = tape[5];
         if (multiplication.includes(thirdOperator)) {
           evaluateNumbers();
         }
@@ -120,17 +131,14 @@ let addOperationsListener = () => {
         tape.pop();
       }
 
-      if (errors.includes(tape[0])) {
-        responsePane.innerText = tape[0];
-      } else {
-        reversedTape = tape.slice();
-        reversedTape.reverse();
-        responsePane.innerText = reversedTape.find( elem => typeof elem === 'number') || responsePane.innerText;
-      }
-    })
+      validateOutput(responsePane, reversedTape);
+    });
   }
-}
+};
 
-let tape = []
+const addEventsToButtons = () => {
+  addDigitsListener();
+  addOperationsListener();
+};
 
 document.addEventListener('DOMContentLoaded', addEventsToButtons());
