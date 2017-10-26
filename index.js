@@ -54,20 +54,18 @@ const evaluateNumbers = () => {
 };
 
 const addDigitsListener = () => {
-  const digitButtons = document.getElementsByClassName('digits');
+  const digitButtons = document.getElementById('digit-buttons');
   const responsePane = document.getElementById('response-pane');
-  for (const elem of digitButtons) {
-    elem.addEventListener('click', (e) => {
-      const elemText = e.currentTarget.innerText;
-      if (responsePane.dataset.processed === 'false') {
-        responsePane.innerText += elemText;
-      } else {
-        responsePane.innerText = elemText;
-      } // end if
-      responsePane.dataset.processed = false;
-    });
-  } // end for
-};
+  digitButtons.addEventListener('click', (e) => {
+    const elemText = e.target.innerText;
+    if (responsePane.dataset.processed === 'false') {
+      responsePane.innerText += elemText;
+    } else {
+      responsePane.innerText = elemText;
+    } // end if
+    responsePane.dataset.processed = false;
+  });
+}; // end for
 
 const validateInput = (responsePane, operators) => {
   if (responsePane.dataset.processed !== 'true') {
