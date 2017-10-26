@@ -91,15 +91,14 @@ const validateOutput = (responsePane, reversedTape) => {
 const addOperationsListener = () => {
   const responsePane = document.getElementById('response-pane');
   const operators = ['+', '-', '×', '÷', '='];
-  const operationButtons = document.getElementsByClassName('operations');
+  const operationButtons = document.getElementById('operation-buttons');
   const addition = ['+', '-'];
   const multiplication = ['×', '÷'];
   let reversedTape = [];
-  for (const elem of operationButtons) {
-    elem.addEventListener('click', (e) => {
+    operationButtons.addEventListener('click', (e) => {
       validateInput(responsePane, operators);
       responsePane.dataset.processed = true;
-      tape.push(e.currentTarget.innerText);
+      tape.push(e.target.innerText);
 
       const firstOperator = tape[1];
       const secondOperator = tape[3];
@@ -134,7 +133,6 @@ const addOperationsListener = () => {
       validateOutput(responsePane, reversedTape);
     });
   }
-};
 
 const addEventsToButtons = () => {
   addDigitsListener();
