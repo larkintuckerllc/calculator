@@ -1,0 +1,45 @@
+body {
+  display: grid;
+}
+
+#calculator {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto;
+  width: 320px;
+  height: 568px;
+}
+
+#response-pane {
+  display: grid;
+  grid-area: response-pane;
+  grid-column: 1/5;
+  grid-row: 1/2;
+}
+
+#modifier-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column: 1/4;
+  grid-row: 2/3;
+}
+
+#operation-buttons {
+  display: grid;
+  grid-area: operation-buttons;
+  grid-column: 4/5;
+  grid-row: 2/7;
+}
+
+#digit-buttons {
+  display: grid;
+  grid-area: digit-buttons;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  grid-column: 1/4;
+  grid-row: 3/7;
+}
+
+.digits:nth-last-child(2) {
+  grid-column: 1/3;
+}
