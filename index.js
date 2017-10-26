@@ -29,14 +29,16 @@ const validationHelpers = {
       tape.pop();
     }
   },
-  validateOutput: (responsePane, reversedTape) => {
+  validateOutput: (responsePaneText) => {
     if (errors.includes(tape[0])) {
-      responsePane.innerText = tape[0];
-    } else {
-      reversedTape = tape.slice();
-      reversedTape.reverse();
-      responsePane.innerText = reversedTape.find(element => typeof element === 'number') || responsePane.innerText;
+      return tape[0];
     }
+    for (let i = tape.length; i >= 0; i -= 1) {
+      if (typeof tape[i] === 'number') {
+        return tape[i];
+      }
+    }
+    return responsePaneText;
   },
 };
 
@@ -92,7 +94,6 @@ const addOperationsListener = () => {
   const operationButtons = document.getElementById('operation-buttons');
   const addition = ['+', '-'];
   const multiplication = ['×', '÷'];
-  const reversedTape = [];
   operationButtons.addEventListener('click', (e) => {
     validationHelpers.validateInput(responsePane, operators);
     responsePane.dataset.processed = true;
@@ -128,7 +129,7 @@ const addOperationsListener = () => {
       tape.pop();
     }
 
-    validationHelpers.validateOutput(responsePane, reversedTape);
+    responsePane.innerText = validationHelpers.validateOutput(responsePane.innerText);
   });
 };
 
