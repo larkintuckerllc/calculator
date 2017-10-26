@@ -110,21 +110,19 @@ const addOperationsListener = () => {
     const secondOperator = tape[3];
     // N is any number, m is division or multiplication, and a is addition or
     // subtraction. There are a total of 5 possible scenarios, as listed below.
-    // scenario: [N, m, N, m]
-    // scenario: [N, m, N, a]
-    // scenario: [N, a, N, a]
+    // This accounts for scenarios [N, m, N, m], [N, m, N, a], and [N, a, N, a]
     if (tape.length === 4) {
       if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
         evaluateNumbers();
       }
     }
     if (tape.length === 6) {
-      // scenario: [N, a, N, m, N, m]
+      // This accounts for scenario [N, a, N, m, N, m]
       const thirdOperator = tape[5];
       if (multiplication.includes(thirdOperator)) {
         evaluateNumbers();
       }
-      // scenario: [N, a, N, m, N, a]
+      // This accounts for scenario [N, a, N, m, N, a]
       if (addition.includes(thirdOperator)) {
         evaluateNumbers();
         evaluateNumbers();
