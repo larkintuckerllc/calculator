@@ -34,7 +34,8 @@ const validationHelpers = {
     }
     return elemText;
   },
-  validateOperationsInput: (responsePane, operators) => {
+  validateOperationsInput: (responsePane) => {
+    const operators = ['+', '-', '×', '÷', '='];
     if (responsePane.dataset.processed !== 'true') {
       tape.push(Number(responsePane.innerText));
     }
@@ -74,15 +75,38 @@ const math = {
     const product = x * y;
     return validationHelpers.validateNumber(product);
   },
-};
-
-const evaluateNumbers = () => {
-  const numbersToEvaluate = tape.splice(-4, 3);
-  const x = numbersToEvaluate[0];
-  const y = numbersToEvaluate[2];
-  const operator = numbersToEvaluate[1];
-  const answer = math[operator](x, y);
-  tape.splice(-1, 0, answer);
+  doMath: () => {
+    const numbersToEvaluate = tape.splice(-4, 3);
+    const x = numbersToEvaluate[0];
+    const y = numbersToEvaluate[2];
+    const operator = numbersToEvaluate[1];
+    const answer = math[operator](x, y);
+    tape.splice(-1, 0, answer);
+  },
+  evaluateTape: () => {
+    const addition = ['+', '-'];
+    const multiplication = ['×', '÷'];
+    const firstOperator = tape[1];
+    const secondOperator = tape[3];
+    const thirdOperator = tape[5];
+    // N is any number, m is division or multiplication, and a is addition or
+    // subtraction. There are a total of 5 possible scenarios, as listed below.
+    // This accounts for scenarios [N, m, N, m], [N, m, N, a], and [N, a, N, a]
+    if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
+      math.doMath();
+    }
+    if (thirdOperator) {
+      // This accounts for scenario [N, a, N, m, N, m]
+      if (multiplication.includes(thirdOperator)) {
+        math.doMath();
+      }
+      // This accounts for scenario [N, a, N, m, N, a]
+      if (addition.includes(thirdOperator)) {
+        math.doMath();
+        math.doMath();
+      }
+    }
+  },
 };
 
 const addDigitsListener = () => {
@@ -97,41 +121,19 @@ const addDigitsListener = () => {
 
 const addOperationsListener = () => {
   const responsePane = document.getElementById('response-pane');
-  const operators = ['+', '-', '×', '÷', '='];
-  const addition = ['+', '-'];
-  const multiplication = ['×', '÷'];
   const operationButtons = document.getElementById('operation-buttons');
   operationButtons.addEventListener('click', (e) => {
-    validationHelpers.validateOperationsInput(responsePane, operators);
+    validationHelpers.validateOperationsInput(responsePane);
     responsePane.dataset.processed = true;
     tape.push(e.target.innerText);
 
-    const firstOperator = tape[1];
-    const secondOperator = tape[3];
-    // N is any number, m is division or multiplication, and a is addition or
-    // subtraction. There are a total of 5 possible scenarios, as listed below.
-    // This accounts for scenarios [N, m, N, m], [N, m, N, a], and [N, a, N, a]
-    if (tape.length === 4) {
-      if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
-        evaluateNumbers();
-      }
-    }
-    if (tape.length === 6) {
-      // This accounts for scenario [N, a, N, m, N, m]
-      const thirdOperator = tape[5];
-      if (multiplication.includes(thirdOperator)) {
-        evaluateNumbers();
-      }
-      // This accounts for scenario [N, a, N, m, N, a]
-      if (addition.includes(thirdOperator)) {
-        evaluateNumbers();
-        evaluateNumbers();
-      }
+    if (tape.length === 4 || tape.length === 6) {
+      math.evaluateTape();
     }
 
     if (tape[tape.length - 1] === '=') {
       while (tape.length > 2) {
-        evaluateNumbers();
+        math.doMath();
       }
       tape.pop();
     }
