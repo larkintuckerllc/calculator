@@ -25,6 +25,7 @@ const validationHelpers = {
     if (responsePane.dataset.processed !== 'true') {
       tape.push(Number(responsePane.innerText));
     }
+    // if user inputs 2 operators in a row, overwrite the first one
     if (operators.includes(tape[tape.length - 1])) {
       tape.pop();
     }
@@ -33,6 +34,7 @@ const validationHelpers = {
     if (errors.includes(tape[0])) {
       return tape[0];
     }
+    // always display the last number in the tape to the user
     for (let i = tape.length; i >= 0; i -= 1) {
       if (typeof tape[i] === 'number') {
         return tape[i];
@@ -79,21 +81,27 @@ const addDigitsListener = () => {
   const responsePane = document.getElementById('response-pane');
   digitButtons.addEventListener('click', (e) => {
     const elemText = e.target.innerText;
+    // on page load, dataset.processed is null. When user first presses a digits
+    // button, responsePane will show the digit that was pressed, and then
+    // dataset.processed becomes false. When the user presses an operations
+    // button, dataset.processed becomes true so that the next digits button
+    // press will display the digit instead of appending the digit to the
+    // display.
     if (responsePane.dataset.processed === 'false') {
       responsePane.innerText += elemText;
     } else {
       responsePane.innerText = elemText;
-    } // end if
+    }
     responsePane.dataset.processed = false;
   });
-}; // end for
+};
 
 const addOperationsListener = () => {
   const responsePane = document.getElementById('response-pane');
   const operators = ['+', '-', '×', '÷', '='];
-  const operationButtons = document.getElementById('operation-buttons');
   const addition = ['+', '-'];
   const multiplication = ['×', '÷'];
+  const operationButtons = document.getElementById('operation-buttons');
   operationButtons.addEventListener('click', (e) => {
     validationHelpers.validateInput(responsePane, operators);
     responsePane.dataset.processed = true;
@@ -101,6 +109,8 @@ const addOperationsListener = () => {
 
     const firstOperator = tape[1];
     const secondOperator = tape[3];
+    // N is any number, m is division or multiplication, and a is addition or
+    // subtraction. There are a total of 5 possible scenarios, as listed below.
     // scenario: [N, m, N, m]
     // scenario: [N, m, N, a]
     // scenario: [N, a, N, a]
