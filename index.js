@@ -8,20 +8,33 @@ const disableButtons = () => {
   }
 };
 
-const errors = ['Error', 'Undefined'];
-
 const validationHelpers = {
+  errors: ['Error', 'Undefined'],
   validateNumber: (number) => {
     if (number.toPrecision().length > 10) {
       disableButtons();
-      return errors[0];
+      return validationHelpers.errors[0];
     } else if (number === Infinity) {
       disableButtons();
-      return errors[1];
+      return validationHelpers.errors[1];
     }
     return number;
   },
-  validateInput: (responsePane, operators) => {
+  // on page load, dataset.processed is null. When user first presses a digits
+  // button, responsePane will show the digit that was pressed, and then
+  // dataset.processed becomes false. When the user presses an operations
+  // button, dataset.processed becomes true so that the next digits button
+  // press will display the digit instead of appending the digit to the
+  // display.
+  validateDigitsInput: (responsePane, elemText) => {
+    let responsePaneText = responsePane.innerText;
+    if (responsePane.dataset.processed === 'false') {
+      responsePaneText += elemText;
+      return responsePaneText;
+    }
+    return elemText;
+  },
+  validateOperationsInput: (responsePane, operators) => {
     if (responsePane.dataset.processed !== 'true') {
       tape.push(Number(responsePane.innerText));
     }
@@ -31,7 +44,7 @@ const validationHelpers = {
     }
   },
   validateOutput: (responsePaneText) => {
-    if (errors.includes(tape[0])) {
+    if (validationHelpers.errors.includes(tape[0])) {
       return tape[0];
     }
     // always display the last number in the tape to the user
@@ -77,17 +90,7 @@ const addDigitsListener = () => {
   const responsePane = document.getElementById('response-pane');
   digitButtons.addEventListener('click', (e) => {
     const elemText = e.target.innerText;
-    // on page load, dataset.processed is null. When user first presses a digits
-    // button, responsePane will show the digit that was pressed, and then
-    // dataset.processed becomes false. When the user presses an operations
-    // button, dataset.processed becomes true so that the next digits button
-    // press will display the digit instead of appending the digit to the
-    // display.
-    if (responsePane.dataset.processed === 'false') {
-      responsePane.innerText += elemText;
-    } else {
-      responsePane.innerText = elemText;
-    }
+    responsePane.innerText = validationHelpers.validateDigitsInput(responsePane, elemText);
     responsePane.dataset.processed = false;
   });
 };
@@ -99,7 +102,7 @@ const addOperationsListener = () => {
   const multiplication = ['×', '÷'];
   const operationButtons = document.getElementById('operation-buttons');
   operationButtons.addEventListener('click', (e) => {
-    validationHelpers.validateInput(responsePane, operators);
+    validationHelpers.validateOperationsInput(responsePane, operators);
     responsePane.dataset.processed = true;
     tape.push(e.target.innerText);
 
