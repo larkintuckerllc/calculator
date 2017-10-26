@@ -10,33 +10,52 @@ const disableButtons = () => {
 
 const errors = ['Error', 'Undefined'];
 
-const validateNumber = (number) => {
-  if (number.toPrecision().length > 10) {
-    disableButtons();
-    return errors[0];
-  } else if (number === Infinity) {
-    disableButtons();
-    return errors[1];
-  }
-  return number;
+const validationHelpers = {
+  validateNumber: (number) => {
+    if (number.toPrecision().length > 10) {
+      disableButtons();
+      return errors[0];
+    } else if (number === Infinity) {
+      disableButtons();
+      return errors[1];
+    }
+    return number;
+  },
+  validateInput: (responsePane, operators) => {
+    if (responsePane.dataset.processed !== 'true') {
+      tape.push(Number(responsePane.innerText));
+    }
+    if (operators.includes(tape[tape.length - 1])) {
+      tape.pop();
+    }
+  },
+  validateOutput: (responsePane, reversedTape) => {
+    if (errors.includes(tape[0])) {
+      responsePane.innerText = tape[0];
+    } else {
+      reversedTape = tape.slice();
+      reversedTape.reverse();
+      responsePane.innerText = reversedTape.find(element => typeof element === 'number') || responsePane.innerText;
+    }
+  },
 };
 
 const math = {
   '+': (x, y) => {
     const sum = x + y;
-    return validateNumber(sum);
+    return validationHelpers.validateNumber(sum);
   },
   '-': (x, y) => {
     const sum = x - y;
-    return validateNumber(sum);
+    return validationHelpers.validateNumber(sum);
   },
   '÷': (x, y) => {
     const product = x / y;
-    return validateNumber(product);
+    return validationHelpers.validateNumber(product);
   },
   '×': (x, y) => {
     const product = x * y;
-    return validateNumber(product);
+    return validationHelpers.validateNumber(product);
   },
 };
 
@@ -67,25 +86,6 @@ const addDigitsListener = () => {
   });
 }; // end for
 
-const validateInput = (responsePane, operators) => {
-  if (responsePane.dataset.processed !== 'true') {
-    tape.push(Number(responsePane.innerText));
-  }
-  if (operators.includes(tape[tape.length - 1])) {
-    tape.pop();
-  }
-};
-
-const validateOutput = (responsePane, reversedTape) => {
-  if (errors.includes(tape[0])) {
-    responsePane.innerText = tape[0];
-  } else {
-    reversedTape = tape.slice();
-    reversedTape.reverse();
-    responsePane.innerText = reversedTape.find(element => typeof element === 'number') || responsePane.innerText;
-  }
-};
-
 const addOperationsListener = () => {
   const responsePane = document.getElementById('response-pane');
   const operators = ['+', '-', '×', '÷', '='];
@@ -94,7 +94,7 @@ const addOperationsListener = () => {
   const multiplication = ['×', '÷'];
   const reversedTape = [];
   operationButtons.addEventListener('click', (e) => {
-    validateInput(responsePane, operators);
+    validationHelpers.validateInput(responsePane, operators);
     responsePane.dataset.processed = true;
     tape.push(e.target.innerText);
 
@@ -128,7 +128,7 @@ const addOperationsListener = () => {
       tape.pop();
     }
 
-    validateOutput(responsePane, reversedTape);
+    validationHelpers.validateOutput(responsePane, reversedTape);
   });
 };
 
