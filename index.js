@@ -1,4 +1,4 @@
-let tape = [];
+const tape = [];
 
 // TODO make AC functional, don't disable AC here, instruct user to press AC in validateNumber()
 const disableButtons = () => {
