@@ -94,45 +94,45 @@ const addOperationsListener = () => {
   const operationButtons = document.getElementById('operation-buttons');
   const addition = ['+', '-'];
   const multiplication = ['×', '÷'];
-  let reversedTape = [];
-    operationButtons.addEventListener('click', (e) => {
-      validateInput(responsePane, operators);
-      responsePane.dataset.processed = true;
-      tape.push(e.target.innerText);
+  const reversedTape = [];
+  operationButtons.addEventListener('click', (e) => {
+    validateInput(responsePane, operators);
+    responsePane.dataset.processed = true;
+    tape.push(e.target.innerText);
 
-      const firstOperator = tape[1];
-      const secondOperator = tape[3];
-      // scenario: [N, m, N, m]
-      // scenario: [N, m, N, a]
-      // scenario: [N, a, N, a]
-      if (tape.length === 4) {
-        if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
-          evaluateNumbers();
-        }
+    const firstOperator = tape[1];
+    const secondOperator = tape[3];
+    // scenario: [N, m, N, m]
+    // scenario: [N, m, N, a]
+    // scenario: [N, a, N, a]
+    if (tape.length === 4) {
+      if (multiplication.includes(firstOperator) || addition.includes(secondOperator)) {
+        evaluateNumbers();
       }
-      if (tape.length === 6) {
-        // scenario: [N, a, N, m, N, m]
-        const thirdOperator = tape[5];
-        if (multiplication.includes(thirdOperator)) {
-          evaluateNumbers();
-        }
-        // scenario: [N, a, N, m, N, a]
-        if (addition.includes(thirdOperator)) {
-          evaluateNumbers();
-          evaluateNumbers();
-        }
+    }
+    if (tape.length === 6) {
+      // scenario: [N, a, N, m, N, m]
+      const thirdOperator = tape[5];
+      if (multiplication.includes(thirdOperator)) {
+        evaluateNumbers();
       }
+      // scenario: [N, a, N, m, N, a]
+      if (addition.includes(thirdOperator)) {
+        evaluateNumbers();
+        evaluateNumbers();
+      }
+    }
 
-      if (tape[tape.length - 1] === '=') {
-        while (tape.length > 2) {
-          evaluateNumbers();
-        }
-        tape.pop();
+    if (tape[tape.length - 1] === '=') {
+      while (tape.length > 2) {
+        evaluateNumbers();
       }
+      tape.pop();
+    }
 
-      validateOutput(responsePane, reversedTape);
-    });
-  }
+    validateOutput(responsePane, reversedTape);
+  });
+};
 
 const addEventsToButtons = () => {
   addDigitsListener();
